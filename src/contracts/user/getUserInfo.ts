@@ -12,7 +12,7 @@ export namespace UserGetInfo {
     id: number;
     email: string;
     confirmed: boolean;
-    user_profiles: {
+    user_profile: {
       id: number;
       full_name: string;
       sex: string;

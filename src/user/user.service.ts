@@ -1,6 +1,6 @@
 import { Directus } from '@directus/sdk';
 import { Injectable } from '@nestjs/common';
-import { UserGetInfo } from '../contracts';
+import { UserGetInfo, UserUpdateInfo } from '../contracts';
 
 @Injectable()
 export class UserService {
@@ -29,5 +29,13 @@ export class UserService {
         'user_profile.user_building.address',
       ],
     });
+  }
+
+  async updateUserInfo(
+    dto: UserUpdateInfo.Request,
+  ): Promise<UserUpdateInfo.Response> {
+    const user_profiles_collection = this.directus.items('user_profiles');
+    await user_profiles_collection.updateOne(dto.id, dto.user_profile);
+    return { success: true };
   }
 }
