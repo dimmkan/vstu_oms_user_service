@@ -36,7 +36,7 @@ export class UserService {
     dto: UserUpdateInfo.Request,
   ): Promise<UserUpdateInfo.Response> {
     const user_profiles_collection = this.directus.items('user_profiles');
-    const { id } = user_profiles_collection
+    const { id } = await user_profiles_collection
       .readByQuery({
         filter: {
           user_id: dto.id,
