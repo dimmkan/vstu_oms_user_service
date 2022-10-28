@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const sdk_1 = require("@directus/sdk");
 const common_1 = require("@nestjs/common");
+const _ = require("ramda");
 let UserService = class UserService {
     constructor() {
         this.directus = new sdk_1.Directus(process.env.DIRECTUS_HOST, {
@@ -27,15 +28,28 @@ let UserService = class UserService {
                 'id',
                 'email',
                 'confirmed',
-                'user_profiles.id',
-                'user_profiles.full_name',
-                'user_profiles.sex',
-                'user_profiles.birthday',
-                'user_profiles.user_building.id',
-                'user_profiles.user_building.name',
-                'user_profiles.user_building.address',
+                'user_profile.id',
+                'user_profile.full_name',
+                'user_profile.sex',
+                'user_profile.birthday',
+                'user_profile.user_building.id',
+                'user_profile.user_building.name',
+                'user_profile.user_building.address',
             ],
         });
+    }
+    async updateUserInfo(dto) {
+        const user_profiles_collection = this.directus.items('user_profiles');
+        const { id } = await user_profiles_collection
+            .readByQuery({
+            filter: {
+                user_id: dto.id,
+            },
+            fields: ['id'],
+        })
+            .then(_.compose(_.head, _.path(['data'])));
+        await user_profiles_collection.updateOne(id, dto.user_profile);
+        return { success: true };
     }
 };
 UserService = __decorate([

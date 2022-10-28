@@ -43,7 +43,7 @@ export class UserService {
         },
         fields: ['id'],
       })
-      .then(_.head);
+      .then(_.compose(_.head, _.path(['data'])));
     await user_profiles_collection.updateOne(id, dto.user_profile);
     return { success: true };
   }

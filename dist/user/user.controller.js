@@ -24,6 +24,9 @@ let UserController = class UserController {
     async getUserInfo({ id }) {
         return this.userService.getUserInfo(id);
     }
+    async updateUserInfo(dto) {
+        return this.userService.updateUserInfo(dto);
+    }
 };
 __decorate([
     (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserGetInfo.topic),
@@ -33,6 +36,14 @@ __decorate([
     __metadata("design:paramtypes", [contracts_1.UserGetInfo.Request]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUserInfo", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserUpdateInfo.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.UserUpdateInfo.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUserInfo", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])
