@@ -1,6 +1,7 @@
 import { Directus } from '@directus/sdk';
 import { Injectable } from '@nestjs/common';
 import { UserGetInfo, UserUpdateInfo } from '../contracts';
+import * as _ from 'ramda';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,14 @@ export class UserService {
     dto: UserUpdateInfo.Request,
   ): Promise<UserUpdateInfo.Response> {
     const user_profiles_collection = this.directus.items('user_profiles');
-    await user_profiles_collection.updateOne(dto.id, dto.user_profile);
+    const { id } = user_profiles_collection
+      .readByQuery({
+        filter: {
+          user_id: dto.id,
+        },
+      })
+      .then(_.head);
+    await user_profiles_collection.updateOne(id, dto.user_profile);
     return { success: true };
   }
 }
