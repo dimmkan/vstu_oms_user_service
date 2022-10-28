@@ -41,6 +41,7 @@ export class UserService {
         filter: {
           user_id: dto.id,
         },
+        fields: ['id'],
       })
       .then(_.head);
     await user_profiles_collection.updateOne(id, dto.user_profile);
