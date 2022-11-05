@@ -1,0 +1,1 @@
+{"version":3,"file":"deleteUserAvatar.js","sourceRoot":"","sources":["../../../src/contracts/user/deleteUserAvatar.ts"],"names":[],"mappings":";;;AAAA,IAAiB,gBAAgB,CAUhC;AAVD,WAAiB,gBAAgB;IAClB,sBAAK,GAAG,yBAAyB,CAAC;IAE/C,MAAa,OAAO;KAEnB;IAFY,wBAAO,UAEnB,CAAA;IAED,MAAa,QAAQ;KAEpB;IAFY,yBAAQ,WAEpB,CAAA;AACH,CAAC,EAVgB,gBAAgB,GAAhB,wBAAgB,KAAhB,wBAAgB,QAUhC"}

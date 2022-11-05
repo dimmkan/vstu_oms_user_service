@@ -27,6 +27,15 @@ let UserController = class UserController {
     async updateUserInfo(dto) {
         return this.userService.updateUserInfo(dto);
     }
+    async getUserAvatar({ id }) {
+        return this.userService.getUserAvatar(id);
+    }
+    async setUserAvatar(dto) {
+        return this.userService.setUserAvatar(dto);
+    }
+    async deleteUserAvatar({ id }) {
+        return this.userService.deleteUserAvatar(id);
+    }
 };
 __decorate([
     (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserGetInfo.topic),
@@ -44,6 +53,30 @@ __decorate([
     __metadata("design:paramtypes", [contracts_1.UserUpdateInfo.Request]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "updateUserInfo", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserGetAvatar.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.UserGetAvatar.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getUserAvatar", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserSetAvatar.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.UserSetAvatar.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "setUserAvatar", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserDeleteAvatar.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.UserDeleteAvatar.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "deleteUserAvatar", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])

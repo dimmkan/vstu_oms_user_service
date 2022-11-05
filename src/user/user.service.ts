@@ -1,7 +1,15 @@
 import { Directus } from '@directus/sdk';
 import { Injectable } from '@nestjs/common';
-import { UserGetInfo, UserUpdateInfo } from '../contracts';
+import {
+  UserGetAvatar,
+  UserGetInfo,
+  UserSetAvatar,
+  UserUpdateInfo,
+  UserDeleteAvatar,
+} from '../contracts';
 import * as _ from 'ramda';
+import * as FormData from 'form-data';
+import { Readable } from 'stream';
 
 @Injectable()
 export class UserService {
@@ -45,6 +53,80 @@ export class UserService {
       })
       .then(_.compose(_.head, _.path(['data'])));
     await user_profiles_collection.updateOne(id, dto.user_profile);
+    return { success: true };
+  }
+
+  async getUserAvatar(id: number): Promise<UserGetAvatar.Response> {
+    const user_avatar_collection = this.directus.items('user_avatar');
+    const result = await user_avatar_collection
+      .readByQuery({
+        filter: {
+          user_id: id,
+        },
+        fields: ['avatar'],
+      })
+      .then(_.compose(_.head, _.path(['data'])));
+    return { avatar_id: (result && result.avatar) ?? '' };
+  }
+
+  async setUserAvatar(
+    dto: UserSetAvatar.Request,
+  ): Promise<UserSetAvatar.Response> {
+    const user_avatar_collection = this.directus.items('user_avatar');
+    const user_avatar = await user_avatar_collection
+      .readByQuery({
+        filter: {
+          user_id: dto.id,
+        },
+        fields: ['id'],
+      })
+      .then(_.compose(_.head, _.path(['data'])));
+
+    const form = new FormData();
+    form.append('file', Readable.from(Buffer.from(dto.avatar, 'base64')), {
+      filename: dto.filename,
+    });
+    const fileId = await this.directus.files.createOne(
+      form,
+      {},
+      {
+        requestOptions: {
+          headers: {
+            ...form.getHeaders(),
+          },
+        },
+      },
+    );
+
+    if (!!user_avatar) {
+      const result = await user_avatar_collection.updateOne(user_avatar.id, {
+        avatar: fileId,
+      });
+      return { avatar_id: result.avatar };
+    } else {
+      const result = await user_avatar_collection.createOne({
+        user_id: dto.id,
+        avatar: fileId,
+      });
+      return { avatar_id: result.avatar };
+    }
+  }
+
+  async deleteUserAvatar(id: number): Promise<UserDeleteAvatar.Response> {
+    const user_avatar_collection = this.directus.items('user_avatar');
+    const result = await user_avatar_collection
+      .readByQuery({
+        filter: {
+          user_id: id,
+        },
+        fields: ['avatar'],
+      })
+      .then(_.compose(_.head, _.path(['data'])));
+
+    if (!!result && !!result.avatar) {
+      await this.directus.files.deleteOne(result.avatar);
+    }
+
     return { success: true };
   }
 }

@@ -1,6 +1,12 @@
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
-import { UserGetInfo, UserUpdateInfo } from 'src/contracts';
+import {
+  UserDeleteAvatar,
+  UserGetAvatar,
+  UserGetInfo,
+  UserSetAvatar,
+  UserUpdateInfo,
+} from 'src/contracts';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -21,5 +27,29 @@ export class UserController {
     @Body() dto: UserUpdateInfo.Request,
   ): Promise<UserUpdateInfo.Response> {
     return this.userService.updateUserInfo(dto);
+  }
+
+  @RMQRoute(UserGetAvatar.topic)
+  @RMQValidate()
+  async getUserAvatar(
+    @Body() { id }: UserGetAvatar.Request,
+  ): Promise<UserGetAvatar.Response> {
+    return this.userService.getUserAvatar(id);
+  }
+
+  @RMQRoute(UserSetAvatar.topic)
+  @RMQValidate()
+  async setUserAvatar(
+    @Body() dto: UserSetAvatar.Request,
+  ): Promise<UserSetAvatar.Response> {
+    return this.userService.setUserAvatar(dto);
+  }
+
+  @RMQRoute(UserDeleteAvatar.topic)
+  @RMQValidate()
+  async deleteUserAvatar(
+    @Body() { id }: UserDeleteAvatar.Request,
+  ): Promise<UserDeleteAvatar.Response> {
+    return this.userService.deleteUserAvatar(id);
   }
 }

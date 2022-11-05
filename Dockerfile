@@ -10,4 +10,5 @@ WORKDIR /opt/app
 ADD package.json ./
 RUN npm install --omit=dev
 COPY --from=build /opt/app/dist ./dist
+RUN mkdir /opt/app/cache
 CMD ["node", "./dist/main.js"]
