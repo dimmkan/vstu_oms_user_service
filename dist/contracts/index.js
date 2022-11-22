@@ -19,7 +19,7 @@ __exportStar(require("./user/updateUserInfo"), exports);
 __exportStar(require("./user/getUserAvatar"), exports);
 __exportStar(require("./user/setUserAvatar"), exports);
 __exportStar(require("./user/deleteUserAvatar"), exports);
-__exportStar(require("./user/ValidateUserEmail"), exports);
+__exportStar(require("./user/validateUserEmail"), exports);
 __exportStar(require("./user/generateRefreshPasswordLink"), exports);
 __exportStar(require("./user/confirmRefreshPasswordLink"), exports);
 //# sourceMappingURL=index.js.map
