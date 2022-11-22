@@ -1,4 +1,4 @@
-import { UserDeleteAvatar, UserGetAvatar, UserGetInfo, UserSetAvatar, UserUpdateInfo } from 'src/contracts';
+import { UserDeleteAvatar, UserGetAvatar, UserGetInfo, UserSetAvatar, UserUpdateInfo, ValidateUserEmail } from 'src/contracts';
 import { UserService } from './user.service';
 export declare class UserController {
     private readonly userService;
@@ -8,4 +8,5 @@ export declare class UserController {
     getUserAvatar({ id }: UserGetAvatar.Request): Promise<UserGetAvatar.Response>;
     setUserAvatar(dto: UserSetAvatar.Request): Promise<UserSetAvatar.Response>;
     deleteUserAvatar({ id }: UserDeleteAvatar.Request): Promise<UserDeleteAvatar.Response>;
+    validateUserEmail({ email }: ValidateUserEmail.Request): Promise<ValidateUserEmail.Response>;
 }

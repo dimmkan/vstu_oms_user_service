@@ -6,6 +6,7 @@ import {
   UserGetInfo,
   UserSetAvatar,
   UserUpdateInfo,
+  ValidateUserEmail,
 } from 'src/contracts';
 import { UserService } from './user.service';
 
@@ -51,5 +52,13 @@ export class UserController {
     @Body() { id }: UserDeleteAvatar.Request,
   ): Promise<UserDeleteAvatar.Response> {
     return this.userService.deleteUserAvatar(id);
+  }
+
+  @RMQRoute(ValidateUserEmail.topic)
+  @RMQValidate()
+  async validateUserEmail(
+    @Body() { email }: ValidateUserEmail.Request,
+  ): Promise<ValidateUserEmail.Response> {
+    return this.userService.validateUserEmail(email);
   }
 }

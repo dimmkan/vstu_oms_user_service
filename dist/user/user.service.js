@@ -114,6 +114,18 @@ let UserService = class UserService {
         }
         return { success: true };
     }
+    async validateUserEmail(email) {
+        const users_collection = this.directus.items('users');
+        const result = await users_collection
+            .readByQuery({
+            filter: {
+                email,
+            },
+            fields: ['id'],
+        })
+            .then(_.path(['data']));
+        return { validate: !!result.length };
+    }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),

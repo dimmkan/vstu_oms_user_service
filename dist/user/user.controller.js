@@ -36,6 +36,9 @@ let UserController = class UserController {
     async deleteUserAvatar({ id }) {
         return this.userService.deleteUserAvatar(id);
     }
+    async validateUserEmail({ email }) {
+        return this.userService.validateUserEmail(email);
+    }
 };
 __decorate([
     (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserGetInfo.topic),
@@ -77,6 +80,14 @@ __decorate([
     __metadata("design:paramtypes", [contracts_1.UserDeleteAvatar.Request]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "deleteUserAvatar", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.ValidateUserEmail.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.ValidateUserEmail.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "validateUserEmail", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])

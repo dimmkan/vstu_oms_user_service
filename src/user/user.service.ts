@@ -6,6 +6,7 @@ import {
   UserSetAvatar,
   UserUpdateInfo,
   UserDeleteAvatar,
+  ValidateUserEmail,
 } from '../contracts';
 import * as _ from 'ramda';
 import * as FormData from 'form-data';
@@ -128,5 +129,18 @@ export class UserService {
     }
 
     return { success: true };
+  }
+
+  async validateUserEmail(email: string): Promise<ValidateUserEmail.Response> {
+    const users_collection = this.directus.items('users');
+    const result = await users_collection
+      .readByQuery({
+        filter: {
+          email,
+        },
+        fields: ['id'],
+      })
+      .then(_.path(['data']));
+    return { validate: !!result.length };
   }
 }

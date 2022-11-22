@@ -9,20 +9,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserGetAvatar = void 0;
+exports.ValidateUserEmail = void 0;
 const class_validator_1 = require("class-validator");
-var UserGetAvatar;
-(function (UserGetAvatar) {
-    UserGetAvatar.topic = 'user.getavatar.query';
+var ValidateUserEmail;
+(function (ValidateUserEmail) {
+    ValidateUserEmail.topic = 'user.validateemail.command';
     class Request {
     }
     __decorate([
-        (0, class_validator_1.IsNumber)(),
-        __metadata("design:type", Number)
-    ], Request.prototype, "id", void 0);
-    UserGetAvatar.Request = Request;
+        (0, class_validator_1.IsEmail)(),
+        __metadata("design:type", String)
+    ], Request.prototype, "email", void 0);
+    ValidateUserEmail.Request = Request;
     class Response {
     }
-    UserGetAvatar.Response = Response;
-})(UserGetAvatar = exports.UserGetAvatar || (exports.UserGetAvatar = {}));
-//# sourceMappingURL=getUserAvatar.js.map
+    ValidateUserEmail.Response = Response;
+})(ValidateUserEmail = exports.ValidateUserEmail || (exports.ValidateUserEmail = {}));
+//# sourceMappingURL=ValidateUserEmail.js.map
