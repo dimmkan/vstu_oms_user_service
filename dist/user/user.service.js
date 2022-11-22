@@ -15,8 +15,13 @@ const common_1 = require("@nestjs/common");
 const _ = require("ramda");
 const FormData = require("form-data");
 const stream_1 = require("stream");
+const bcrypt = require("bcrypt");
+const mailer_service_1 = require("../mailer/mailer.service");
+const nestjs_rmq_1 = require("nestjs-rmq");
+const constants_1 = require("nestjs-rmq/dist/constants");
 let UserService = class UserService {
-    constructor() {
+    constructor(mailerService) {
+        this.mailerService = mailerService;
         this.directus = new sdk_1.Directus(process.env.DIRECTUS_HOST, {
             auth: {
                 staticToken: process.env.ADMIN_API_KEY,
@@ -126,10 +131,46 @@ let UserService = class UserService {
             .then(_.path(['data']));
         return { validate: !!result.length };
     }
+    async generateRefreshPasswordLink(email, new_password) {
+        const refresh_password_collection = this.directus.items('refresh_password');
+        const hash = await bcrypt.hash(new_password, 10);
+        await refresh_password_collection.createOne({
+            email,
+            new_password: hash,
+        });
+        await this.mailerService.sendRefreshMail(hash, email);
+        return { success: true };
+    }
+    async confirmRefreshPasswordLink(hash) {
+        const refresh_password_collection = this.directus.items('refresh_password');
+        const users_collection = this.directus.items('users');
+        const result = await refresh_password_collection
+            .readByQuery({
+            filter: {
+                new_password: hash,
+            },
+            fields: ['id,email'],
+        })
+            .then(_.compose(_.head, _.path(['data'])));
+        if (!result) {
+            throw new nestjs_rmq_1.RMQError('Данные для изменения пароля не найдены!', constants_1.ERROR_TYPE.RMQ, 400);
+        }
+        const user = await users_collection
+            .readByQuery({
+            filter: {
+                email: result.email,
+            },
+            fields: ['id'],
+        })
+            .then(_.compose(_.head, _.path(['data'])));
+        await users_collection.updateOne(user.id, { password: hash });
+        await refresh_password_collection.deleteOne(result.id);
+        return { success: true };
+    }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [mailer_service_1.MailerService])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

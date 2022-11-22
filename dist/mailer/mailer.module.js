@@ -6,19 +6,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModule = void 0;
+exports.MailerModule = void 0;
+const axios_1 = require("@nestjs/axios");
 const common_1 = require("@nestjs/common");
-const mailer_module_1 = require("../mailer/mailer.module");
-const user_controller_1 = require("./user.controller");
-const user_service_1 = require("./user.service");
-let UserModule = class UserModule {
+const mailer_service_1 = require("./mailer.service");
+let MailerModule = class MailerModule {
 };
-UserModule = __decorate([
+MailerModule = __decorate([
     (0, common_1.Module)({
-        imports: [mailer_module_1.MailerModule],
-        controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService],
+        imports: [
+            axios_1.HttpModule.registerAsync({
+                useFactory: () => ({
+                    timeout: 5000,
+                    maxRedirects: 5,
+                }),
+            }),
+        ],
+        providers: [mailer_service_1.MailerService],
+        exports: [mailer_service_1.MailerService],
     })
-], UserModule);
-exports.UserModule = UserModule;
-//# sourceMappingURL=user.module.js.map
+], MailerModule);
+exports.MailerModule = MailerModule;
+//# sourceMappingURL=mailer.module.js.map

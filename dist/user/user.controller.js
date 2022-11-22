@@ -39,6 +39,12 @@ let UserController = class UserController {
     async validateUserEmail({ email }) {
         return this.userService.validateUserEmail(email);
     }
+    async generateRefreshPasswordLink({ email, new_password }) {
+        return this.userService.generateRefreshPasswordLink(email, new_password);
+    }
+    async confirmRefreshPasswordLink({ hash }) {
+        return this.userService.confirmRefreshPasswordLink(hash);
+    }
 };
 __decorate([
     (0, nestjs_rmq_1.RMQRoute)(contracts_1.UserGetInfo.topic),
@@ -88,6 +94,22 @@ __decorate([
     __metadata("design:paramtypes", [contracts_1.ValidateUserEmail.Request]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "validateUserEmail", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.GenerateRefreshPasswordLink.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.GenerateRefreshPasswordLink.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "generateRefreshPasswordLink", null);
+__decorate([
+    (0, nestjs_rmq_1.RMQRoute)(contracts_1.ConfirmRefreshPasswordLink.topic),
+    (0, nestjs_rmq_1.RMQValidate)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [contracts_1.ConfirmRefreshPasswordLink.Request]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "confirmRefreshPasswordLink", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService])

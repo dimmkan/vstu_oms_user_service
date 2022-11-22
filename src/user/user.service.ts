@@ -7,15 +7,21 @@ import {
   UserUpdateInfo,
   UserDeleteAvatar,
   ValidateUserEmail,
+  GenerateRefreshPasswordLink,
+  ConfirmRefreshPasswordLink,
 } from '../contracts';
 import * as _ from 'ramda';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
+import * as bcrypt from 'bcrypt';
+import { MailerService } from 'src/mailer/mailer.service';
+import { RMQError } from 'nestjs-rmq';
+import { ERROR_TYPE } from 'nestjs-rmq/dist/constants';
 
 @Injectable()
 export class UserService {
   directus: any;
-  constructor() {
+  constructor(private readonly mailerService: MailerService) {
     this.directus = new Directus(process.env.DIRECTUS_HOST, {
       auth: {
         staticToken: process.env.ADMIN_API_KEY,
@@ -142,5 +148,59 @@ export class UserService {
       })
       .then(_.path(['data']));
     return { validate: !!result.length };
+  }
+
+  async generateRefreshPasswordLink(
+    email: string,
+    new_password: string,
+  ): Promise<GenerateRefreshPasswordLink.Response> {
+    const refresh_password_collection = this.directus.items('refresh_password');
+    const hash = await bcrypt.hash(new_password, 10);
+    await refresh_password_collection.createOne({
+      email,
+      new_password: hash,
+    });
+
+    await this.mailerService.sendRefreshMail(hash, email);
+
+    return { success: true };
+  }
+
+  async confirmRefreshPasswordLink(
+    hash: string,
+  ): Promise<ConfirmRefreshPasswordLink.Response> {
+    const refresh_password_collection = this.directus.items('refresh_password');
+    const users_collection = this.directus.items('users');
+
+    const result = await refresh_password_collection
+      .readByQuery({
+        filter: {
+          new_password: hash,
+        },
+        fields: ['id,email'],
+      })
+      .then(_.compose(_.head, _.path(['data'])));
+
+    if (!result) {
+      throw new RMQError(
+        'Данные для изменения пароля не найдены!',
+        ERROR_TYPE.RMQ,
+        400,
+      );
+    }
+
+    const user = await users_collection
+      .readByQuery({
+        filter: {
+          email: result.email,
+        },
+        fields: ['id'],
+      })
+      .then(_.compose(_.head, _.path(['data'])));
+
+    await users_collection.updateOne(user.id, { password: hash });
+    await refresh_password_collection.deleteOne(result.id);
+
+    return { success: true };
   }
 }

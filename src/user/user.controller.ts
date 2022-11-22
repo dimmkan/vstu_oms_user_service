@@ -1,6 +1,8 @@
 import { Body, Controller } from '@nestjs/common';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
+  ConfirmRefreshPasswordLink,
+  GenerateRefreshPasswordLink,
   UserDeleteAvatar,
   UserGetAvatar,
   UserGetInfo,
@@ -60,5 +62,21 @@ export class UserController {
     @Body() { email }: ValidateUserEmail.Request,
   ): Promise<ValidateUserEmail.Response> {
     return this.userService.validateUserEmail(email);
+  }
+
+  @RMQRoute(GenerateRefreshPasswordLink.topic)
+  @RMQValidate()
+  async generateRefreshPasswordLink(
+    @Body() { email, new_password }: GenerateRefreshPasswordLink.Request,
+  ): Promise<GenerateRefreshPasswordLink.Response> {
+    return this.userService.generateRefreshPasswordLink(email, new_password);
+  }
+
+  @RMQRoute(ConfirmRefreshPasswordLink.topic)
+  @RMQValidate()
+  async confirmRefreshPasswordLink(
+    @Body() { hash }: ConfirmRefreshPasswordLink.Request,
+  ): Promise<ConfirmRefreshPasswordLink.Response> {
+    return this.userService.confirmRefreshPasswordLink(hash);
   }
 }
