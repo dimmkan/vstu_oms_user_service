@@ -89,3 +89,5 @@ typings/
 
 #Files cache
 cache/
+
+.env
